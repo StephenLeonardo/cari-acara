@@ -20,10 +20,10 @@ TEMPLATE_DIR = Path.joinpath(BASE_DIR, 'templates')
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '2^ev#_ob1p$@as50abx6^u4_hagnt#2d4+$cik#w=17#x+tq(6'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -97,7 +97,7 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'USER': 'root',
-        'PASSWORD': 'cariAcara321',
+        'PASSWORD': '',
     }
 }
 
