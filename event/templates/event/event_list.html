@@ -1,0 +1,14 @@
+{% extends "event/event_base.html" %}
+
+{% block content %}
+  
+  <h1>Events</h1>
+  <ul>
+  {% for event in object_list %}
+    <li>{{ event.name }} - {{ article.user.username }}</li>
+  {% empty %}
+    <li>No events yet.</li>
+  {% endfor %}
+  </ul>
+  
+{% endblock %}

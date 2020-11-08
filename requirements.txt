@@ -1,0 +1,15 @@
+asgiref @ file:///home/conda/feedstock_root/build_artifacts/asgiref_1592528583041/work
+beautifulsoup4==4.9.3
+certifi==2020.6.20
+Django @ file:///home/conda/feedstock_root/build_artifacts/django_1604315001636/work
+django-bootstrap4==1.1.1
+mysql-connector-python==8.0.18
+mysqlclient==2.0.1
+olefile @ file:///home/conda/feedstock_root/build_artifacts/olefile_1602866521163/work
+Pillow @ file:///D:/bld/pillow_1604749014518/work
+protobuf==3.6.0
+pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1604321279890/work
+six @ file:///home/conda/feedstock_root/build_artifacts/six_1590081179328/work
+soupsieve==2.0.1
+sqlparse @ file:///home/conda/feedstock_root/build_artifacts/sqlparse_1602142927465/work
+wincertstore==0.2
