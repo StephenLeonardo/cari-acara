@@ -26,7 +26,7 @@
       <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
           <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
-                <li class="nav-item">
+                <li class="nav-item"> 
                   <a class="nav-link" href="{% url 'account:profile' pk=user.pk %}">{{user.username}}</a>
                 </li>
                 <li class="nav-item">
