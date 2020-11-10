@@ -1,14 +1,130 @@
 {% extends "event/event_base.html" %}
 
+
+
+{% block custom_css %}
+
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bricklayer/0.4.2/bricklayer.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bricklayer/0.4.2/bricklayer.min.js"></script>
+
+
+  <style>
+  
+    ul {
+      list-style-type: none;
+    }
+  
+    .custom-card {
+      padding: 2em;
+    }
+  
+    .event-list-container {
+      padding: 10px;
+      overflow-x: scroll;
+      background: #FCD02C;
+    }
+    
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      transition: 0.3s;
+      border: none;
+      margin-bottom: 2em;
+      &:hover {
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.4);
+    }
+  a {
+    color: initial;
+    &:hover {
+      text-decoration: initial;
+    }
+  }
+  .text-muted i {
+    margin: 0 10px;
+  }
+}
+
+.btn-row {
+   display: flex;
+   align-items: center;
+}
+
+.btn-create {
+  margin-right: 2%;
+}
+
+  
+  @media screen and (min-width: 1200px) {
+  .bricklayer-column-sizer {
+    /* divide by 3. */
+    width: 33.3%;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .bricklayer-column-sizer {
+    width: 33%;
+  }
+}
+    
+  </style>
+  
+{% endblock %}
+
+
 {% block content %}
   
-  <h1>Events</h1>
-  <ul>
-  {% for event in object_list %}
-    <li>{{ event.name }} - {{ article.user.username }}</li>
-  {% empty %}
-    <li>No events yet.</li>
-  {% endfor %}
-  </ul>
+    <div class="container">      
+      
+      <div class="row btn-row">
+        <div class="col-4">
+          <h1>Events</h1>    
+        </div>
+        
+        <div class="col-5">
+        </div>
+        
+        <div class="col-3">
+          <div class="float-right btn-create">
+            <a href="{% url 'events:create' %}" class="btn btn-primary">Create New Event</a>
+          </div>
+        </div>
+        
+      </div>
+      
+    {# <div class="card-columns"> #}
+    
+      <div class="bricklayer">
+      
+          
+        {% for event in object_list %}
+          <div class="card">
+        <a href="#">
+          <img class="card-img-top" src="https://images.unsplash.com/photo-1535025639604-9a804c092faa?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6cb0ceb620f241feb2f859e273634393&auto=format&fit=crop&w=500&q=80" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">{{ event.name }}</h5>
+            <p class="card-text">
+              {{ event.description|truncatechars:50 }}
+            </p>
+            <p class="card-text"><small class="text-muted"><i class="far fa-user"></i>{{ event.user.username }}<i class="fas fa-calendar-alt">{{ event.created_at|date:'d M Y' }}</i></small></p>
+          </div>
+        </a>
+      </div> 
+          
+        
+        {% empty %}
+          No events yet.
+        {% endfor %}
+    </div>
+        
+    {# </div> #}
+  </div>
+  
+{% endblock %}
+
+
+{% block custom_js %}
+  <script type="text/javascript">
+    var bricklayer = new Bricklayer(document.querySelector('.bricklayer'))
+  </script>
   
 {% endblock %}

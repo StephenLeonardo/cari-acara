@@ -19,10 +19,10 @@ from django.conf import settings
 from . import views
 
 urlpatterns = [
-    path('', include('event.urls', namespace='event')),
+    path('', include('event.urls')),
     path('admin/', admin.site.urls),
     path('account/', include('account.urls', namespace='account')),
     path('login_redirect/', views.LoginRedirectPage.as_view(), name='login_redirect'),
     path('logout_redirect/', views.LogoutRedirectPage.as_view(), name='logout_redirect'),
-    path('event/', include('event.urls', namespace='event')),
+    path('events/', include('event.urls')),
 ]
