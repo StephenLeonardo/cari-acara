@@ -1,19 +1,29 @@
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
+import os.path
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
+
+
+def get_image_path(instance, filename):
+    return os.path.join('photos', 'event_banner', filename)
+
 
 # Create your models here.
 class Event(models.Model):
     user = models.ForeignKey(User, related_name='events', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
-    name = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=255, blank=False, null=False)
     description = models.TextField()
+    event_date = models.DateField(blank=True, null=True)
+    event_time = models.TimeField(blank=True, null=True)
+    image = models.ImageField(upload_to=get_image_path, blank=True, null=True)
     
     def __str__(self):
         return self.name
+    
     
     def get_absolute_url(self):
         return reverse('event:detail', kwargs={'username':self.user.username, 'pk':self.pk})

@@ -1,14 +1,235 @@
 {% extends "event/event_base.html" %}
-{% load bootstrap4 %}
+{% load crispy_forms_tags %}
+
+{% block custom_css %}
+  <style media="screen">
+    
+    .custom-container {
+      margin-top: 2em;
+      margin-bottom: 2em;
+    }
+    
+    .drop-area {
+      height: 100%;
+      border: 1px dashed;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      -webkit-box-align: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .drop-area.drop-area-highlighted {
+      border: 2px dashed;
+    }
+    
+    .drop-area-title {
+      font-size: 2em;
+      color: #9f9797;
+    }
+    
+    
+    #div_id_category_name div{
+      display: flex;
+      margin-right: 1.2em;
+    }
+    
+    .form-check {
+      cursor: pointer;
+    }
+    
+    .form-check-label {
+      cursor: pointer;
+    }
+    
+  </style>
+{% endblock %}
 
 {% block content %}
-
-  <form class="" action="{% url 'events:create' %}" method="post" id="event-form">
-    {% csrf_token %}
+  <div class="container custom-container">
     
-    {% bootstrap_form form %}
-    <input type="submit" name="" value="Submit" class="btn btn-success btn-large">
+    <div class="row">
+      
+      <div class="col-md-4">
+        <div class="drop-area justify-content-center align-items-center h-100" id="drop_area">
+          <div class="" id="drop-area-content">
+            <span class="drop-area-title">Drag and drop image here</span>
+            <p>or 
+              <a href="#">browse</a>
+            </p>
+            
+          </div>
+        </div>
+      </div>
+            
+      
+      <div class="col-md-8">
+        {{ form.errors }}
+        {{ form.non_field_errors }}
+        <form class="" action="{% url 'events:create' %}" method="post" id="event-form" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+              {{form.name|as_crispy_field}}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+              {{form.description|as_crispy_field}}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+              {{form.event_date|as_crispy_field}}
+            </div>
+            <div class="form-group col-md-6 mb-0">
+              {{form.event_time|as_crispy_field}}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-12 mb-0">
+                {{form.category_name|as_crispy_field}}
+            </div>
+          </div>
+          <div class="form-row d-none">
+            <div class="form-group col-md-12 mb-0">
+              {{form.image|as_crispy_field}}
+            </div>
+          </div>
+          <input type="submit" id="btn-submit" value="Submit" class="btn btn-success btn-large">
+          
+        </form>
+      </div>
+      
+    </div>
     
-  </form>
+  
+</div>
+  
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
   
 {% endblock %}
+
+
+
+{% block custom_js %}
+  
+  <script type="text/javascript">
+  
+  
+    const dropArea = document.getElementById("drop_area");
+    let files;
+    
+    const btnSubmit = document.getElementById("btn-submit");
+    
+    ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false)
+    })
+
+    function preventDefaults (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    
+    ;['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, highlight, false)
+    })
+
+    ;['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, unhighlight, false)
+    })
+
+    function highlight(e) {
+      dropArea.classList.add('drop-area-highlighted')
+    }
+
+    function unhighlight(e) {
+      dropArea.classList.remove('drop-area-highlighted')
+    }
+    
+    dropArea.addEventListener('drop', handleDrop, false)
+
+    function handleDrop(e) {
+      let dt = e.dataTransfer
+      files = dt.files[0]
+      console.log(files)
+      
+      document.getElementById("drop-area-content").innerHTML = 'Data inserted'
+
+    }
+
+
+    btnSubmit.addEventListener("click", (e) => {
+      // e.preventDefault();
+      // submitData();
+    })
+    
+    
+    function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = jQuery.trim(cookies[i]);
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+    }
+    
+    
+    function submitData() {
+      let url = "{% url 'events:create' %}";
+      let formData = new FormData()
+      
+
+            
+
+      formData.append("name", document.getElementById("id_name").value);
+      formData.append("description", document.getElementById("id_description").value);
+      formData.append("event_date", document.getElementById("id_event_date").value);
+      formData.append("event_time", document.getElementById("id_event_time").value);
+      
+      var checkedValue = []; 
+      var inputElements = document.getElementsByClassName('form-check-input');
+      for(var i=0; inputElements[i]; ++i){
+            if(inputElements[i].checked){
+                 checkedValue.push(inputElements[i].value);
+            }
+      }
+      console.log(checkedValue)
+      
+      formData.append("category_name", checkedValue);
+      formData.append('image', files);
+      for (var data of formData) {
+        console.log(data);
+      }
+
+      fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken")
+        }
+      })
+      .then((e) => { /* Done. Inform the user */ })
+      .catch((e) => { /* Error. Inform the user */ })
+  }
+    
+  </script>
+  
+{% endblock %}
+

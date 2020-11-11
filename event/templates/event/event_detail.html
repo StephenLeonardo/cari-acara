@@ -1,0 +1,59 @@
+{% extends "event/event_base.html" %}
+
+{% block custom_css %}
+
+  <style media="screen">
+    .category-list {
+      font-size: .8em;
+      margin-bottom: 2em;
+    }
+    
+    
+    .event-detail-container {
+      margin-top: 3em;
+    }
+    
+  </style>
+  
+{% endblock %}
+
+
+
+{% block content_no_container %}
+  
+{% endblock %}
+
+
+{% block content %}
+<div class="container event-detail-container">
+  
+  <div class="row media">
+    
+    <div class="col-md-3">
+      
+      {% if event.image %}
+        <img class="img-fluid" src="{{event.image.url}}" alt="">
+      {% else %}
+        <img class="img-fluid" src="https://images.unsplash.com/photo-1535025639604-9a804c092faa?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6cb0ceb620f241feb2f859e273634393&auto=format&fit=crop&w=500&q=80">
+      {% endif %}
+      
+    </div>
+    
+    <div class="col-md-9">
+      <h1>{{event.name}}</h1>
+      
+      <div class="category-list">
+        {% for item in event_categories %}
+          {{item.category.name}} | 
+        {% endfor %}
+      </div>
+      
+      <p>{{event.description}}</p>
+    </div>
+    
+  </div>
+  
+</div>
+  
+  
+{% endblock %}
