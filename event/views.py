@@ -1,83 +1,96 @@
-import os.path
-from django.shortcuts import render
-from django.http.response import HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
 from .models import Event, Category, EventCategory
-from .forms import *
-import uuid
+from rest_framework import viewsets
+from rest_framework import permissions
+from .serializers import (CategorySerializer,
+                          EventSerializer,
+                          EventCategorySerializer,
+                          EventCategoryMappingSerializer,
+                          UserSerializer)
+from .permissions import IsOwnerOrReadOnly
 
-from django.views.generic import (ListView, DetailView,
-                                    CreateView, DeleteView,
-                                    TemplateView)
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
 
-from django.contrib import messages
-from django.contrib.auth.mixins import (LoginRequiredMixin,
-                                        PermissionRequiredMixin)
 
-from django.forms import formset_factory
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
-# Create your views here.
-class EventList(ListView):
-    model = Event
-    # paginate_by = 20
-    
-    
-    template_name = 'event/event_list.html'
-    
+from django.http import Http404
+from rest_framework.views import APIView
 
-class EventCreate(LoginRequiredMixin, CreateView):
-    template_name = 'event/event_create.html'
-    form_class = EventForm
+from rest_framework import mixins
+from rest_framework import generics
+
+from rest_framework import permissions
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+
+
+from rest_framework import renderers
+
+class EventHighlight(generics.GenericAPIView):
+    queryset = Event.objects.all()
+    renderer_classes = [renderers.StaticHTMLRenderer]
+
+    def get(self, request, *args, **kwargs):
+        event = self.get_object()
+        return Response(event)
+
+
+from rest_framework import viewsets
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This viewset automatically provides `list` and `retrieve` actions.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import permissions
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list` and `retrieve` actions.
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+class EventViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+
+    Additionally we also provide an extra `highlight` action.
+    """
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
+
+    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        event = self.get_object()
+        return Response(event.description)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
         
-    def form_valid(self, form):
-        context = self.get_context_data()
-        print(form)
-        print('HAHAHHAHAH')
-        categories = form.cleaned_data['category_name']
-        print(categories)
-        event_name = form.cleaned_data['name']
-        event_desc = form.cleaned_data['description']
-        
-        # self.request.FILES['image']
-        temp_image = None
-        if self.request.FILES and self.request.FILES['image']:
-            extension = os.path.splitext(temp_image.name)[1]
-            
-            if not (temp_image.name.endswith('.jpg')
-                or temp_image.name.endswith('jpeg')
-                or temp_image.name.endswith('png')):
-                messages.error(self.request, 'image must be either jpg, jpeg, or png format.')
-                return super().form_invalid(form)
-                
-            unique_filename = str(uuid.uuid4()) + extension
-            temp_image.name = unique_filename
-            
-        
-        
-        event = Event(user=self.request.user, name=event_name, description=event_desc, image=temp_image)
-        event.save()
-        for key in categories:
-            event_category = EventCategory(event = event, category = Category.objects.get(pk=key))
-            event_category.save()
-        
-        return HttpResponseRedirect(reverse_lazy('events:list'))
-    
-    def form_invalid(self, form):
-        messages.error(self.request, form.errors)
-        print(form.errors)
-        return super().form_invalid(form)
-    
 
-class EventDetail(DetailView):
-    model = Event
-    template_name = 'event/event_detail.html'
-    
-    
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['event']
-        context['event_categories'] = EventCategory.objects.filter(event_id=self.kwargs.get('pk'))
-        return context
-
-
+class EventCategoryViewSet(viewsets.ModelViewSet):
+    queryset = EventCategory.objects.all()
+    serializer_class = EventCategoryMappingSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
+                          

@@ -14,7 +14,8 @@ def get_image_path(instance, filename):
 # Create your models here.
 class Event(models.Model):
     user = models.ForeignKey(User, related_name='events', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=255, blank=False, null=False)
     description = models.TextField()
     event_date = models.DateField(blank=True, null=True)
@@ -26,7 +27,7 @@ class Event(models.Model):
     
     
     def get_absolute_url(self):
-        return reverse('event:detail', kwargs={'username':self.user.username, 'pk':self.pk})
+        return reverse('events:detail', kwargs={'username':self.user.username, 'pk':self.pk})
         
     class Meta:
         ordering = ['-created_at']

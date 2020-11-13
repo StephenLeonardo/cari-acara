@@ -20,13 +20,20 @@ from . import views
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
+from event import views as eventViews
+from account import views as accountViews
+
+
+
 urlpatterns = [
     path('', include('event.urls')),
-    path('admin/', admin.site.urls),
-    path('account/', include('account.urls', namespace='account')),
-    path('login_redirect/', views.LoginRedirectPage.as_view(), name='login_redirect'),
-    path('logout_redirect/', views.LogoutRedirectPage.as_view(), name='logout_redirect'),
-    path('events/', include('event.urls')),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    # path('', include('event.urls')),
+    # path('admin/', admin.site.urls),
+    # path('account/', include('account.urls', namespace='account')),
+    # path('login_redirect/', views.LoginRedirectPage.as_view(), name='login_redirect'),
+    # path('logout_redirect/', views.LogoutRedirectPage.as_view(), name='logout_redirect'),
+    # path('events/', include('event.urls')),
 ]
 
 urlpatterns  += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
