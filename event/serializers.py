@@ -50,6 +50,23 @@ class EventSerializer(serializers.ModelSerializer):
                 'event_time',
                 'image',
                 'event_categories']
+            
+    def create(self, validated_data):
+        print("HAHAHHAHHAHAH")
+                
+    def validate_user(self, value):
+        # The `validate` method is where we make sure that the current
+        # instance of `LoginSerializer` has "valid". In the case of logging a
+        # user in, this means validating that they've provided an email
+        # and password and that this combination matches one of the users in
+        # our database.
+        
+        user = User
+
+        # The `validate` method should return a dictionary of validated data.
+        # This is the data that is passed to the `create` and `update` methods
+        # that we will see later on.
+        return user
                 
 
 

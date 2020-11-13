@@ -84,8 +84,75 @@ class EventViewSet(viewsets.ModelViewSet):
         event = self.get_object()
         return Response(event.description)
 
+
+    def create(self, validated_data):
+        if '_mutable' in validated_data.data:
+            validated_data.data._mutable = True
+            
+        print('huhuhuhuhuhuhu')
+        print(validated_data.data)
+        # validated_data.data['user'] = validated_data.user
+        
+        if 'user' in validated_data.data:
+            print("OHOHOHOHOHOH")
+            validated_data.data.pop('user')
+        
+        if 'user.email' in validated_data.data:
+            validated_data.data.pop('user.email')
+        
+        if 'user.username' in validated_data.data:
+            validated_data.data.pop('user.username')
+            
+        if 'csrfmiddlewaretoken' in validated_data.data:
+            validated_data.data.pop('csrfmiddlewaretoken')
+        
+        
+        categories = []
+        if 'event_categories' in validated_data.data:
+            categories = validated_data.data.pop('event_categories')
+        
+        print("XIXIXIXIX")
+        
+        event_date = None
+        event_time = None
+        
+        # print(validated_data.data['event_date'])
+        if validated_data.data['event_date'] == '':
+            print('DISINI')
+            validated_data.data['event_date'] = None
+            
+        else:
+            print(validated_data.data['event_date'])
+            
+        if validated_data.data['event_time'] == '':
+            print('DISANA')
+            validated_data.data['event_time'] = None
+        else:
+            print(validated_data.data['event_time'])
+            
+        print(validated_data.data)
+        
+        event = Event.objects.create(user=validated_data.user, **validated_data.data)
+        category_list = [] 
+        for product_details in categories:
+            # product_details['event'] = event.pk
+            print(product_details)
+            category = Category.objects.filter(pk=product_details)[0]
+            category_list.append(EventCategory.objects.create(event=event,category=category))
+        
+        if '_mutable' in validated_data.data:
+            validated_data.data._mutable = False
+        return event
+            
+            
+            
+            
+            
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        print("HEEHHEHEHHEH")
+        print(serializer['name'])
+        serializer.save(user=self.request.user)
+        serializer.save(event_categories=Category.objects.filter(pk__in=self.request.data['event_categories']))
         
 
 class EventCategoryViewSet(viewsets.ModelViewSet):
